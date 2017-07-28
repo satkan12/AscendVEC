@@ -143,17 +143,17 @@ int floor3sense = 0; // variable for reading the proximity status of the floors
             callElevator2 = digitalRead(CallButton2);
             callElevator3 = digitalRead(CallButton3);
 
-//            if(callElevator1 == HIGH)
-//            {
-//              delay(500);
-//              while(callElevator1 == HIGH)
-//              {
-//                callElevator1 = digitalRead(CallButton1);
-//                delay(10);
-//              }
-//              delay(1000);
-//              floorCall();
-//            }
+            if(callElevator1 == HIGH)
+            {
+              delay(500);
+              while(callElevator1 == HIGH)
+              {
+                callElevator1 = digitalRead(CallButton1);
+                delay(10);
+              }
+              delay(1000);
+              floorCall();
+            }
     
     floorCall();
     
