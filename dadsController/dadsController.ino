@@ -18,6 +18,7 @@ const int RelayDown=53;//the relay that drives down the elevator
 const int buzzer = 11;//a buzzer warning movement or alarm stop
 const int powerOn=13;
 
+bool floorWait = false;
 int callElevator1 = 0; // variable for reading the pushbutton status of the floors
 int callElevator2 = 0; // variable for reading the pushbutton status of the floors
 int callElevator3 = 0; // variable for reading the pushbutton status of the floors
@@ -48,39 +49,96 @@ int floor3sense = 0; // variable for reading the proximity status of the floors
   
   int checkForCall()
   {
-    while(Serial.available() > 0){
-    incomingByte = Serial.read() - '0';
-    Serial.print("I received: ");
-    Serial.println(incomingByte);
+    //while(Serial.available() > 0){
+    //incomingByte = Serial.read() - '0';
+    //Serial.print("I received: ");
+    //Serial.println(incomingByte);
     //Serial.end();
-    return incomingByte;
-    }
+    //return incomingByte;
+    if(!doorOpen)
+    {
+        if(digitalRead(CallButton1) == HIGH)
+        {
+          if(!doorOpen)
+          {
+          blinkFloorLED(999);
+          lcdDisplay("Attending Floor 0");
+          delay(5000);
+           return 1; 
+          }
+        }
+        if(digitalRead(CallButton2) == HIGH)
+        {
+          if(!doorOpen)
+          {
+          blinkFloorLED(999);
+          lcdDisplay("Attending Floor 1");
+          delay(5000);
+           return 2; 
+          }
+        }
+        
+        if(digitalRead(CallButton3) == HIGH)
+        {
+          if(!doorOpen)
+          {         
+          blinkFloorLED(999);
+          lcdDisplay("Attending Floor 2");
+          delay(5000);
+           return 3; 
+          }
+        }
+        else
+        {
+          floorWait =  !doorOpen;
+        }
+    } 
   }
-
   void blinkFloorLED(int floorNo)
   {
     switch (floorNo)
     {
       case 1:
+      if(floorWait)
+      {
         digitalWrite(Floor0 , HIGH);
+        delay(100);
+        digitalWrite(Floor0 , LOW);
+        delay(100);
+        //floorWait =!doorOpen;
+      }
         break;
       case 2:
+      if(floorWait)
+      {
         digitalWrite(Floor1 , HIGH);
+        delay(100);
+        digitalWrite(Floor1 , LOW);
+        delay(100);
+        //floorWait =!doorOpen;
+      }
         break;
       case 3:
+      if(floorWait)
+      {
         digitalWrite(Floor2 , HIGH);
+        delay(100);
+        digitalWrite(Floor2 , LOW);
+        delay(100);
+        //floorWait =!doorOpen;
+      }
         break;
-      default:
+      case 999:
         digitalWrite(Floor0 , LOW);
         digitalWrite(Floor1 , LOW);
         digitalWrite(Floor2 , LOW);
         break;
     }
   }
-  void floorCall(/*int floorNo*/)
+  bool floorCall(int floorNo)
   {
     setDoorValue();
-    int floorNo = checkForCall();
+    //int floorNo = checkForCall();
     if(!doorOpen)
     {
       lcd.clear();
@@ -90,18 +148,24 @@ int floor3sense = 0; // variable for reading the proximity status of the floors
       blinkFloorLED(floorNo);
       if(floorNo > 0 && floorNo < 4)
         {
-          lcd.print( "Floor #:"+ String(floorNo - 1));
+          
+            lcdDisplay( "Floor #:"+ String(floorNo - 1));
+            //delay(3000);
+          return true;
         }
       else if(floorNo > 3)
         {
-          lcd.print( "INVALID FLOOR!");
+          lcdDisplay( "INVALID FLOOR!");          
+          return false;
         }
-      delay(5000);
+      delay(2000);
     }
     else{
       lcd.clear();
-      if(floorNo == 0)
+      //if(floorNo == 0)
+      if(doorOpen)      
       lcdDisplay( "DOOR OPEN ");
+      return false;
     }
     
   //  //ADD A DELAY
@@ -123,6 +187,7 @@ int floor3sense = 0; // variable for reading the proximity status of the floors
   
   void setup() {
     pinMode(DoorOpen, INPUT);
+    pinMode(11,   OUTPUT);
     pinMode(Floor0,   OUTPUT);
     pinMode(Floor1,   OUTPUT);
     pinMode(Floor2,   OUTPUT);
@@ -132,30 +197,31 @@ int floor3sense = 0; // variable for reading the proximity status of the floors
     pinMode(CallButton3,   INPUT);
     
     HomeScreen();
-    Serial.begin(9600);
+    //Serial.begin(9600);
   }
   
   void loop() {
     //HomeScreen();
     
     // read the state of the pushbuttons value:
-            callElevator1 = digitalRead(CallButton1);
-            callElevator2 = digitalRead(CallButton2);
-            callElevator3 = digitalRead(CallButton3);
+//            callElevator1 = digitalRead(CallButton1);
+//            callElevator2 = digitalRead(CallButton2);
+//            callElevator3 = digitalRead(CallButton3);
 
-            if(callElevator1 == HIGH)
-            {
-              delay(500);
-              while(callElevator1 == HIGH)
-              {
-                callElevator1 = digitalRead(CallButton1);
-                delay(10);
-              }
+//            if(callElevator1 == HIGH)
+//            {
+//              delay(500);
+//              while(callElevator1 == HIGH)
+//              {
+//                callElevator1 = digitalRead(CallButton1);
+//                delay(10);
+//              }
               delay(1000);
-              floorCall();
-            }
-    
-    floorCall();
+//              floorCall();
+            //}
+        floorWait =!doorOpen;
+        digitalWrite(11, floorWait);
+        floorCall(checkForCall());
     
   }
 
