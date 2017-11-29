@@ -49,32 +49,26 @@ int floor3sense = 0; // variable for reading the proximity status of the floors
   
   int checkForCall()
   {
-    //while(Serial.available() > 0){
-    //incomingByte = Serial.read() - '0';
-    //Serial.print("I received: ");
-    //Serial.println(incomingByte);
-    //Serial.end();
-    //return incomingByte;
     if(!doorOpen)
     {
         if(digitalRead(CallButton1) == HIGH)
         {
           if(!doorOpen)
           {
-          blinkFloorLED(999);
-          lcdDisplay("Attending Floor 0");
-          delay(5000);
-           return 1; 
+            blinkFloorLED(999);
+            lcdDisplay("Attending Floor 0");
+            delay(5000);
+             return 1; 
           }
         }
         if(digitalRead(CallButton2) == HIGH)
         {
           if(!doorOpen)
           {
-          blinkFloorLED(999);
-          lcdDisplay("Attending Floor 1");
-          delay(5000);
-           return 2; 
+            blinkFloorLED(999);
+            lcdDisplay("Attending Floor 1");
+            delay(5000);
+             return 2; 
           }
         }
         
@@ -82,10 +76,10 @@ int floor3sense = 0; // variable for reading the proximity status of the floors
         {
           if(!doorOpen)
           {         
-          blinkFloorLED(999);
-          lcdDisplay("Attending Floor 2");
-          delay(5000);
-           return 3; 
+            blinkFloorLED(999);
+            lcdDisplay("Attending Floor 2");
+            delay(5000);
+             return 3; 
           }
         }
         else
@@ -99,7 +93,7 @@ int floor3sense = 0; // variable for reading the proximity status of the floors
     switch (floorNo)
     {
       case 1:
-      if(floorWait)
+      while(floorWait && (digitalRead(CallButton1)==HIGH))
       {
         digitalWrite(Floor0 , HIGH);
         delay(100);
@@ -109,7 +103,7 @@ int floor3sense = 0; // variable for reading the proximity status of the floors
       }
         break;
       case 2:
-      if(floorWait)
+      while(floorWait && (digitalRead(CallButton2)==HIGH))
       {
         digitalWrite(Floor1 , HIGH);
         delay(100);
@@ -119,7 +113,7 @@ int floor3sense = 0; // variable for reading the proximity status of the floors
       }
         break;
       case 3:
-      if(floorWait)
+      while(floorWait && (digitalRead(CallButton3)==HIGH))
       {
         digitalWrite(Floor2 , HIGH);
         delay(100);
@@ -128,14 +122,14 @@ int floor3sense = 0; // variable for reading the proximity status of the floors
         //floorWait =!doorOpen;
       }
         break;
-      case 999:
+      default:
         digitalWrite(Floor0 , LOW);
         digitalWrite(Floor1 , LOW);
         digitalWrite(Floor2 , LOW);
         break;
     }
   }
-  bool floorCall(int floorNo)
+  void floorCall(int floorNo)
   {
     setDoorValue();
     //int floorNo = checkForCall();
@@ -148,15 +142,14 @@ int floor3sense = 0; // variable for reading the proximity status of the floors
       blinkFloorLED(floorNo);
       if(floorNo > 0 && floorNo < 4)
         {
-          
-            lcdDisplay( "Floor #:"+ String(floorNo - 1));
+          lcdDisplay( "Floor #:"+ String(floorNo - 1));
             //delay(3000);
-          return true;
+          //return true;
         }
       else if(floorNo > 3)
         {
           lcdDisplay( "INVALID FLOOR!");          
-          return false;
+          //return false;
         }
       delay(2000);
     }
@@ -165,7 +158,7 @@ int floor3sense = 0; // variable for reading the proximity status of the floors
       //if(floorNo == 0)
       if(doorOpen)      
       lcdDisplay( "DOOR OPEN ");
-      return false;
+      //return false;
     }
     
   //  //ADD A DELAY
@@ -178,11 +171,11 @@ int floor3sense = 0; // variable for reading the proximity status of the floors
   void setDoorValue()
   {
     int doorRelay = digitalRead(DoorOpen);
-    delay(1);
+    delay(1000);
     if( doorRelay == 1)
-    doorOpen = false;
+      doorOpen = false;
     else
-    doorOpen = true;
+      doorOpen = true;
   }
   
   void setup() {
@@ -204,9 +197,9 @@ int floor3sense = 0; // variable for reading the proximity status of the floors
     //HomeScreen();
     
     // read the state of the pushbuttons value:
-//            callElevator1 = digitalRead(CallButton1);
-//            callElevator2 = digitalRead(CallButton2);
-//            callElevator3 = digitalRead(CallButton3);
+            //callElevator1 = digitalRead(CallButton1);
+            //callElevator2 = digitalRead(CallButton2);
+            //callElevator3 = digitalRead(CallButton3);
 
 //            if(callElevator1 == HIGH)
 //            {
